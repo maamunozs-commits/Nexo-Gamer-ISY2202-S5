@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es-CL" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="galeria">
+    <figure th:each="medio : ${participacion.medios}">
+        <video th:if="${medio.video()}" controls preload="metadata"
+               th:src="@{/eventos/{id}/medios/{medio}(id=${detalle.evento.id},medio=${medio.id})}"
+               th:aria-label="${medio.titulo}"></video>
+        <img th:unless="${medio.video()}" th:src="@{/eventos/{id}/medios/{medio}(id=${detalle.evento.id},medio=${medio.id})}"
+             th:alt="${medio.titulo}" loading="lazy">
+        <figcaption th:text="${medio.titulo}">Archivo del evento</figcaption>
+    </figure>
+</th:block>
+
+<section class="bloque ficha" th:fragment="herramientas" th:if="${autorEvento}" aria-labelledby="gestionar">
+    <h2 id="gestionar">Gestionar publicación</h2>
+    <div class="operaciones-publicacion">
+        <form class="formulario-comunidad formulario-compacto" method="post" enctype="multipart/form-data"
+              th:action="@{/eventos/{id}/medios(id=${detalle.evento.id})}">
+            <h3>Agregar a la galería</h3>
+            <label>Título del archivo<input name="titulo" maxlength="100" required></label>
+            <label>Foto o video<input type="file" name="archivo" accept="image/jpeg,image/png,video/mp4" required></label>
+            <p class="ayuda-comunidad">JPEG o PNG hasta 4 MB. MP4 hasta 10 MB.</p>
+            <button class="boton boton-pequeno" type="submit">Agregar archivo</button>
+        </form>
+        <div class="difusion-comunidad">
+            <h3>Compartir evento</h3>
+            <form method="post" th:action="@{/eventos/{id}/compartir(id=${detalle.evento.id})}"
+                  th:unless="${difusion.compartido}">
+                <button class="boton boton-pequeno" type="submit">Compartir en la comunidad</button>
+            </form>
+            <a class="enlace-detalle" th:if="${difusion.compartido}" th:href="@{/eventos/comunidad}">Ver en la comunidad</a>
+            <p class="enlaces-sociales">
+                <a class="boton boton-secundario boton-pequeno"
+                   th:href="@{https://wa.me/(text=${difusion.enlace})}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                <a class="boton boton-secundario boton-pequeno"
+                   th:href="@{https://x.com/intent/post(url=${difusion.enlace})}" target="_blank" rel="noopener noreferrer">X</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="bloque ficha" th:fragment="interaccion" aria-labelledby="interaccion">
+    <h2 id="interaccion">Opiniones y valoración</h2>
+    <p th:if="${participacion.valoracion.cantidad > 0}"
+       th:text="|${participacion.valoracion.promedio} de 5 · ${participacion.valoracion.cantidad} valoraciones|">Valoración</p>
+    <p th:unless="${participacion.valoracion.cantidad > 0}">Aún no hay valoraciones.</p>
+    <form class="formulario-comunidad formulario-compacto fila-valoracion" method="post"
+          th:action="@{/eventos/{id}/valoracion(id=${detalle.evento.id})}">
+        <label for="puntuacion">Tu valoración</label>
+        <select id="puntuacion" name="puntuacion" required>
+            <option value="">Selecciona una puntuación</option>
+            <option th:each="punto : ${#numbers.sequence(1,5)}" th:value="${punto}"
+                    th:selected="${participacion.valoracion.propia == punto}" th:text="${punto}">1</option>
+        </select>
+        <button class="boton boton-pequeno" type="submit">Guardar valoración</button>
+    </form>
+
+    <h3>Comentarios</h3>
+    <p th:if="${participacion.comentarios.isEmpty()}">Aún no hay comentarios.</p>
+    <article class="comentario-evento" th:each="comentario : ${participacion.comentarios}">
+        <p><strong th:text="${comentario.autor}">Participante</strong>
+            <time th:datetime="${comentario.fecha}" th:text="${#temporals.format(comentario.fecha,'dd/MM/yyyy HH:mm')}">Fecha</time></p>
+        <p th:text="${comentario.contenido}">Comentario</p>
+    </article>
+    <form class="formulario-comunidad formulario-compacto" method="post"
+          th:action="@{/eventos/{id}/comentarios(id=${detalle.evento.id})}">
+        <label for="contenido-comentario">Tu comentario</label>
+        <textarea id="contenido-comentario" name="contenido" rows="3" maxlength="600" required></textarea>
+        <button class="boton boton-pequeno" type="submit">Publicar comentario</button>
+    </form>
+</section>
+</body>
+</html>

@@ -1,0 +1,8 @@
+http://{$IP_NEXO} {
+    redir https://{$DOMINIO_NEXO}{uri} 308
+}
+
+{$DOMINIO_NEXO} {
+    encode zstd gzip
+    reverse_proxy aplicacion:8080
+}

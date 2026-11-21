@@ -1,0 +1,28 @@
+services:
+  base-datos:
+    restart: unless-stopped
+  aplicacion:
+    restart: unless-stopped
+    environment:
+      COOKIES_SEGURAS: "true"
+      CABECERAS_PROXY: framework
+      ENLACE_PUBLICO: https://${DOMINIO_NEXO:?Configura DOMINIO_NEXO}
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - aplicacion
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      IP_NEXO: ${IP_NEXO:?Configura IP_NEXO}
+      DOMINIO_NEXO: ${DOMINIO_NEXO:?Configura DOMINIO_NEXO}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - certificados:/data
+      - datos_proxy:/config
+
+volumes:
+  certificados:
+  datos_proxy:

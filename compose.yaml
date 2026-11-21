@@ -1,0 +1,38 @@
+name: nexo-gamer-s5
+services:
+  base-datos:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: eventos_gamer
+      MYSQL_USER: eventos
+      MYSQL_PASSWORD: ${CLAVE_BD:?Ejecute el inicializador o configure .env}
+      MYSQL_ROOT_PASSWORD: ${CLAVE_RAIZ:?Ejecute el inicializador o configure .env}
+    volumes:
+      - datos:/var/lib/mysql
+      - ./base-datos/01_eventos.sql:/docker-entrypoint-initdb.d/01_eventos.sql:ro
+      - ./base-datos/02_comunidad.sql:/docker-entrypoint-initdb.d/02_comunidad.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_PASSWORD\" mysql -h 127.0.0.1 -u \"$$MYSQL_USER\" \"$$MYSQL_DATABASE\" -Nse 'SELECT COUNT(*) FROM medios_evento'"]
+      interval: 5s
+      timeout: 5s
+      retries: 25
+      start_period: 30s
+
+  aplicacion:
+    build: .
+    depends_on:
+      base-datos:
+        condition: service_healthy
+    environment:
+      URL_BD: jdbc:mysql://base-datos:3306/eventos_gamer?connectionTimeZone=UTC
+      USUARIO_BD: eventos
+      CLAVE_BD: ${CLAVE_BD:?Configure CLAVE_BD}
+      CLAVE_JWT: ${CLAVE_JWT:?Configure CLAVE_JWT}
+      COOKIES_SEGURAS: ${COOKIES_SEGURAS:-false}
+      CABECERAS_PROXY: ${CABECERAS_PROXY:-none}
+      ENLACE_PUBLICO: ${ENLACE_PUBLICO:-http://localhost:8090}
+    ports:
+      - "${DIRECCION_HTTP:-127.0.0.1}:${PUERTO_HTTP:-8090}:8080"
+
+volumes:
+  datos:

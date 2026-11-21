@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es-CL" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{componentes :: cabecera('Comunidad')}"></head>
+<body>
+<header th:replace="~{componentes :: navegacion('comunidad')}"></header>
+<main class="ancho pagina" id="contenido">
+    <h1>Eventos compartidos</h1>
+    <p class="bajada">Publicaciones que sus organizadores difundieron en la comunidad.</p>
+    <p th:if="${eventos.isEmpty()}">Aún no se han compartido eventos.</p>
+    <div class="rejilla-tarjetas" th:unless="${eventos.isEmpty()}">
+        <th:block th:each="evento : ${eventos}">
+            <article th:replace="~{componentes :: tarjeta(${evento})}"></article>
+        </th:block>
+    </div>
+</main>
+<footer th:replace="~{componentes :: pie}"></footer>
+</body>
+</html>

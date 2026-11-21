@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es-CL" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{componentes :: cabecera('Explorar eventos')}"></head>
+<body>
+<header th:replace="~{componentes :: navegacion('buscar')}"></header>
+<main class="ancho pagina" id="contenido">
+    <p class="rotulo">Catálogo público</p>
+    <h1>Explorar eventos</h1>
+    <p class="bajada">Combina los filtros para encontrar eventos presenciales y en línea.</p>
+
+    <form class="filtros" th:action="@{/eventos/buscar}" method="get" th:object="${filtros}">
+        <p class="mensaje-error" role="alert" th:if="${#fields.hasAnyErrors()}">Revisa la fecha y los valores de los filtros.</p>
+        <div class="rejilla-filtros">
+            <label for="nombre">Nombre del evento
+                <input type="search" th:field="*{nombre}" maxlength="120" placeholder="Ej. Arena">
+            </label>
+            <label for="videojuego">Videojuego
+                <input type="search" th:field="*{videojuego}" maxlength="100" placeholder="Ej. Valorant">
+            </label>
+            <label for="categoria">Categoría
+                <input type="search" th:field="*{categoria}" maxlength="60" placeholder="Ej. Torneo">
+            </label>
+            <label for="pais">País
+                <input type="search" th:field="*{pais}" maxlength="60" placeholder="Ej. Chile">
+            </label>
+            <label for="ciudad">Ciudad
+                <input type="search" th:field="*{ciudad}" maxlength="80" placeholder="Ej. Santiago">
+            </label>
+            <label for="fecha">Fecha
+                <input type="date" th:field="*{fecha}">
+            </label>
+            <label for="modalidad">Modalidad
+                <select th:field="*{modalidad}">
+                    <option value="">Todas</option>
+                    <option value="Presencial">Presencial</option>
+                    <option value="En línea">En línea</option>
+                </select>
+            </label>
+            <div class="acciones-filtro">
+                <button class="boton boton-principal" type="submit">Buscar</button>
+                <a class="enlace-detalle" th:href="@{/eventos/buscar}">Limpiar</a>
+            </div>
+        </div>
+    </form>
+
+    <section class="bloque" th:if="${resultados != null}" aria-labelledby="titulo-resultados">
+        <div class="titulo-seccion">
+            <h2 id="titulo-resultados">Resultados</h2>
+            <p th:text="${resultados.total} == 1 ? '1 evento' : ${resultados.total} + ' eventos'">Eventos</p>
+        </div>
+        <p class="vacio" th:if="${resultados.eventos.isEmpty()}">No se encontraron eventos con los filtros seleccionados.</p>
+        <div class="rejilla">
+            <th:block th:each="evento : ${resultados.eventos}">
+                <article th:replace="~{componentes :: tarjeta(${evento})}"></article>
+            </th:block>
+        </div>
+        <nav class="paginacion" aria-label="Páginas de resultados" th:if="${resultados.anterior or resultados.siguiente}">
+            <a class="boton boton-secundario" th:if="${resultados.anterior}"
+               th:href="@{/eventos/buscar(nombre=${filtros.nombre},videojuego=${filtros.videojuego},categoria=${filtros.categoria},pais=${filtros.pais},ciudad=${filtros.ciudad},fecha=${filtros.fecha},modalidad=${filtros.modalidad},pagina=${resultados.pagina - 1})}">Anterior</a>
+            <a class="boton boton-secundario" th:if="${resultados.siguiente}"
+               th:href="@{/eventos/buscar(nombre=${filtros.nombre},videojuego=${filtros.videojuego},categoria=${filtros.categoria},pais=${filtros.pais},ciudad=${filtros.ciudad},fecha=${filtros.fecha},modalidad=${filtros.modalidad},pagina=${resultados.pagina + 1})}">Siguiente</a>
+        </nav>
+    </section>
+</main>
+<footer th:replace="~{componentes :: pie}"></footer>
+</body>
+</html>

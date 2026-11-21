@@ -1,0 +1,78 @@
+rules:
+  - id: vista-html-sin-escape
+    languages: [generic]
+    severity: ERROR
+    message: Usa th:text para que Thymeleaf escape los datos presentados.
+    metadata:
+      cwe: CWE-79
+      prioridad: alta
+    paths:
+      include: ["**/templates/**/*.html"]
+    pattern-regex: '(?i)\bth:utext\s*='
+
+  - id: vista-enlace-directo-desde-modelo
+    languages: [generic]
+    severity: ERROR
+    message: Usa una ruta interna fija que valide el destino HTTPS en el servidor antes de redirigir.
+    metadata:
+      cwe: CWE-601
+      prioridad: alta
+    paths:
+      include: ["**/templates/**/*.html"]
+    pattern-regex: '(?i)\bth:href\s*=\s*["'']\$\{[^"\r\n}]+\}["'']'
+
+  - id: vista-formulario-con-destino-externo
+    languages: [generic]
+    severity: ERROR
+    message: Envía los formularios a una ruta interna controlada por Spring.
+    metadata:
+      cwe: CWE-522
+      prioridad: alta
+    paths:
+      include: ["**/templates/**/*.html"]
+    pattern-regex: '(?i)\b(?:th:)?action\s*=\s*["''](?:@\{)?https?://'
+
+  - id: consulta-jpa-concatenada
+    languages: [java]
+    severity: ERROR
+    message: Define una consulta constante y enlaza los parámetros mediante JPA.
+    metadata:
+      cwe: CWE-89
+      prioridad: alta
+    pattern-either:
+      - pattern: $GESTOR.createQuery($IZQUIERDA + $DERECHA, ...)
+      - pattern: $GESTOR.createNativeQuery($IZQUIERDA + $DERECHA, ...)
+
+  - id: consulta-jdbc-concatenada
+    languages: [java]
+    severity: ERROR
+    message: Usa SQL paramétrico para los datos que cambian con cada solicitud.
+    metadata:
+      cwe: CWE-89
+      prioridad: alta
+    pattern-either:
+      - pattern: $CLIENTE.sql($IZQUIERDA + $DERECHA)
+      - pattern: $SENTENCIA.executeQuery($IZQUIERDA + $DERECHA)
+      - pattern: $SENTENCIA.executeUpdate($IZQUIERDA + $DERECHA)
+
+  - id: carga-con-nombre-original-en-destino
+    languages: [java]
+    severity: ERROR
+    message: Genera un identificador interno para almacenar el archivo.
+    metadata:
+      cwe: CWE-22
+      prioridad: alta
+    pattern-either:
+      - pattern: new File(..., $ARCHIVO.getOriginalFilename(), ...)
+      - pattern: $RUTA.resolve($ARCHIVO.getOriginalFilename())
+
+  - id: hoja-estilo-recurso-http
+    languages: [generic]
+    severity: WARNING
+    message: Usa un recurso local o un origen HTTPS autorizado.
+    metadata:
+      cwe: CWE-319
+      prioridad: media
+    paths:
+      include: ["**/static/**/*.css"]
+    pattern-regex: '(?i)url\(\s*["'']?http://'

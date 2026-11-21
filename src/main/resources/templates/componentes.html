@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es-CL" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="cabecera(titulo)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' | Nexo Gamer'">Nexo Gamer</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/marca.svg}">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<header class="encabezado" th:fragment="navegacion(activa)">
+    <a class="salto" href="#contenido">Saltar al contenido</a>
+    <div class="ancho barra">
+        <a class="marca" th:href="@{/eventos}">
+            <img th:src="@{/img/marca.svg}" width="34" height="34" alt="">
+            <span>Nexo<span class="marca-verde">Gamer</span></span>
+        </a>
+        <nav aria-label="Menú principal">
+            <a class="enlace-nav" th:href="@{/eventos}"
+               th:attr="aria-current=${activa == 'inicio' ? 'page' : null}">Inicio</a>
+            <a class="enlace-nav" th:href="@{/eventos/buscar}"
+               th:attr="aria-current=${activa == 'buscar' ? 'page' : null}">Explorar</a>
+            <a class="enlace-nav" th:if="${autenticado == true}" th:href="@{/eventos/comunidad}"
+               th:attr="aria-current=${activa == 'comunidad' ? 'page' : null}">Comunidad</a>
+            <a class="enlace-nav" th:if="${organizador == true}" th:href="@{/eventos/publicar}"
+               th:attr="aria-current=${activa == 'publicar' ? 'page' : null}">Publicar</a>
+            <a class="boton boton-secundario boton-pequeno" th:if="${autenticado != true}"
+               th:href="@{/eventos/acceso}" th:attr="aria-current=${activa == 'acceso' ? 'page' : null}">Iniciar sesión</a>
+            <form th:if="${autenticado == true}" th:action="@{/eventos/salir}" method="post">
+                <button class="boton boton-secundario boton-pequeno" type="submit">Cerrar sesión</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<article class="tarjeta" th:fragment="tarjeta(evento)">
+    <img th:src="@{/img/{imagen}(imagen=${evento.imagen})}" alt="" width="460" height="250" loading="lazy">
+    <div class="tarjeta-cuerpo">
+        <div class="tarjeta-meta">
+            <span class="etiqueta" th:text="${evento.categoria}">Torneo</span>
+            <time th:datetime="${evento.fecha}" th:text="${#temporals.format(evento.fecha, 'dd/MM/yyyy')}">Fecha</time>
+        </div>
+        <h3><a th:href="@{/eventos/{id}(id=${evento.id})}" th:text="${evento.nombre}">Nombre del evento</a></h3>
+        <p class="tarjeta-datos" th:text="|${evento.videojuego} · ${evento.ciudad}, ${evento.pais}|">Juego y ciudad</p>
+        <p class="tarjeta-resumen" th:text="${evento.resumen}">Resumen</p>
+        <div class="tarjeta-pie">
+            <span th:text="${evento.modalidad}">Modalidad</span>
+            <a class="enlace-detalle" th:href="@{/eventos/{id}(id=${evento.id})}"
+               th:aria-label="|Ver detalle de ${evento.nombre}|">Ver detalle <span aria-hidden="true">→</span></a>
+        </div>
+    </div>
+</article>
+
+<footer class="pie" th:fragment="pie">
+    <div class="ancho pie-interior">
+        <span class="marca">Nexo<span class="marca-verde">Gamer</span></span>
+        <p>Catálogo académico de eventos de demostración · ISY2202</p>
+    </div>
+</footer>
+</body>
+</html>

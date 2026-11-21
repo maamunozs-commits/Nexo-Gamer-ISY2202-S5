@@ -1,0 +1,44 @@
+name: Verificar Nexo Gamer
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  analisis:
+    name: Análisis estático de Java, Thymeleaf y CSS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Ejecutar Semgrep
+        run: |
+          imagen="$(tr -d '\r\n' < analisis-estatico/imagen.txt)"
+          docker run --rm -v "${PWD}:/src:ro" "$imagen" semgrep scan --config /src/analisis-estatico/reglas.yml --metrics off --disable-version-check --no-git-ignore --error /src/src/main
+
+  funcionamiento:
+    name: Compilar y verificar con MySQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Iniciar la aplicación
+        run: |
+          umask 077
+          for variable in CLAVE_BD CLAVE_RAIZ CLAVE_JWT; do
+            valor="$(openssl rand -base64 32)"
+            printf '::add-mask::%s\n' "$valor"
+            printf '%s=%s\n' "$variable" "$valor" >> .env
+          done
+          docker compose up -d --build
+          curl --fail --silent --retry 30 --retry-delay 2 --retry-all-errors http://localhost:8090/eventos > /dev/null
+      - name: Verificar rutas privadas y persistencia
+        run: node pruebas/verificar.mjs
+      - name: Resumen de Docker
+        if: failure()
+        run: docker compose logs --tail 75

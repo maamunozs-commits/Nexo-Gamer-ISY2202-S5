@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es-CL" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{componentes :: cabecera('Publicar evento')}"></head>
+<body>
+<header th:replace="~{componentes :: navegacion('publicar')}"></header>
+<main class="ancho pagina" id="contenido">
+    <a class="enlace-detalle volver" th:href="@{/eventos/buscar}">Volver al catálogo</a>
+    <h1>Publicar evento</h1>
+    <p class="bajada">Completa los datos que necesitan los participantes para sumarse al evento.</p>
+    <p class="aviso-comunidad aviso-error" role="alert" th:if="${aviso}" th:text="${aviso}">Revisa los datos.</p>
+    <form class="formulario-comunidad" method="post" th:action="@{/eventos/publicar}" th:object="${datos}">
+        <div class="aviso-comunidad aviso-error" role="alert" th:if="${#fields.hasErrors('*')}">
+            <p>Revisa los datos indicados.</p>
+            <ul><li th:each="error : ${#fields.detailedErrors()}"
+                    th:text="|${error.fieldName}: ${error.message}|">Error</li></ul>
+        </div>
+        <div class="campos-comunidad">
+            <label>Nombre<input th:field="*{nombre}" maxlength="120" required></label>
+            <label>Videojuego<input th:field="*{videojuego}" maxlength="100" required></label>
+            <label>Categoría<input th:field="*{categoria}" maxlength="60" required></label>
+            <label>Organizador<input th:field="*{organizador}" maxlength="120" required></label>
+            <label>País<input th:field="*{pais}" maxlength="60" required></label>
+            <label>Ciudad<input th:field="*{ciudad}" maxlength="80" required></label>
+            <label>Fecha<input type="date" th:field="*{fecha}" required></label>
+            <label>Hora<input type="time" th:field="*{hora}" required></label>
+            <label>Modalidad<select th:field="*{modalidad}" required>
+                <option value="Presencial">Presencial</option><option value="En línea">En línea</option>
+            </select></label>
+            <label>Ubicación presencial<input th:field="*{ubicacion}" maxlength="255"></label>
+            <label class="campo-ancho">Canal HTTPS de Twitch o YouTube<input type="url" th:field="*{enlace}" maxlength="255"></label>
+            <label class="campo-ancho">Resumen<input th:field="*{resumen}" maxlength="255" required></label>
+            <label class="campo-ancho">Descripción<textarea th:field="*{descripcion}" rows="4" maxlength="1000" required></textarea></label>
+            <label>Requisitos<textarea th:field="*{requisitos}" rows="3" maxlength="400" required></textarea></label>
+            <label>Inscripción<textarea th:field="*{inscripcion}" rows="3" maxlength="400" required></textarea></label>
+        </div>
+        <button class="boton" type="submit">Publicar evento</button>
+    </form>
+</main>
+<footer th:replace="~{componentes :: pie}"></footer>
+</body>
+</html>

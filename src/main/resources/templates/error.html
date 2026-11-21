@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="es-CL" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{componentes :: cabecera('Página no disponible')}"></head>
+<body>
+<header th:replace="~{componentes :: navegacion('error')}"></header>
+<main class="ancho pagina" id="contenido">
+    <section class="acceso-panel">
+        <p class="rotulo" th:text="|Estado ${status}|">Estado</p>
+        <h1>Página no disponible</h1>
+        <p class="bajada">Regresa al catálogo para continuar explorando eventos.</p>
+        <a class="boton boton-principal" th:href="@{/eventos/buscar}">Ir al catálogo</a>
+    </section>
+</main>
+<footer th:replace="~{componentes :: pie}"></footer>
+</body>
+</html>

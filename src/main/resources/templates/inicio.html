@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es-CL" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{componentes :: cabecera('Inicio')}"></head>
+<body>
+<header th:replace="~{componentes :: navegacion('inicio')}"></header>
+<main id="contenido">
+    <div class="ancho portada-contenedor">
+        <section class="portada" aria-labelledby="titulo-inicio">
+            <div class="portada-texto">
+                <p class="rotulo">Cartelera de videojuegos</p>
+                <h1 id="titulo-inicio">Eventos gamer<br>cerca de ti</h1>
+                <p>Explora torneos, encuentros y talleres. Filtra por juego, ciudad o modalidad y encuentra tu próximo evento.</p>
+                <a class="boton boton-principal" th:href="@{/eventos/buscar}">Explorar eventos <span aria-hidden="true">→</span></a>
+            </div>
+        </section>
+    </div>
+
+    <div class="ancho">
+        <section class="bloque" aria-labelledby="titulo-recientes">
+            <div class="titulo-seccion">
+                <div><p class="rotulo">Nuevas publicaciones</p><h2 id="titulo-recientes">Eventos recientes</h2></div>
+                <a class="enlace-detalle" th:href="@{/eventos/buscar}">Ver catálogo <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="rejilla">
+                <th:block th:each="evento : ${inicio.recientes}">
+                    <article th:replace="~{componentes :: tarjeta(${evento})}"></article>
+                </th:block>
+            </div>
+        </section>
+
+        <section class="avisos" aria-label="Avisos comerciales">
+            <aside class="aviso" th:each="aviso : ${inicio.avisos}">
+                <p class="rotulo">Aviso comercial</p>
+                <h2 th:text="${aviso.marca}">Marca</h2>
+                <p th:text="${aviso.mensaje}">Mensaje</p>
+            </aside>
+        </section>
+
+        <section class="bloque bloque-final" aria-labelledby="titulo-populares">
+            <p class="rotulo">Destacados del catálogo</p>
+            <h2 id="titulo-populares">Eventos populares</h2>
+            <div class="rejilla">
+                <th:block th:each="evento : ${inicio.populares}">
+                    <article th:replace="~{componentes :: tarjeta(${evento})}"></article>
+                </th:block>
+            </div>
+        </section>
+    </div>
+</main>
+<footer th:replace="~{componentes :: pie}"></footer>
+</body>
+</html>

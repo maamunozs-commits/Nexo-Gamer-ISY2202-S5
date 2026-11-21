@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es-CL" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{componentes :: cabecera(${detalle.evento.nombre})}"></head>
+<body>
+<header th:replace="~{componentes :: navegacion('detalle')}"></header>
+<main class="ancho pagina" id="contenido">
+    <a class="enlace-detalle volver" th:href="@{/eventos/buscar}"><span aria-hidden="true">←</span> Volver al catálogo</a>
+    <p class="rotulo" th:text="|${detalle.evento.categoria} · ${detalle.evento.modalidad}|">Categoría y modalidad</p>
+    <h1 th:text="${detalle.evento.nombre}">Nombre</h1>
+    <p class="bajada" th:text="|${detalle.evento.videojuego} · ${detalle.evento.ciudad}, ${detalle.evento.pais}|">Juego y ciudad</p>
+
+    <p class="aviso-comunidad" role="status" th:if="${confirmacion}" th:text="${confirmacion}">Confirmación</p>
+    <p class="aviso-comunidad aviso-error" role="alert" th:if="${aviso}" th:text="${aviso}">Revisa la operación.</p>
+    <div class="detalle-cuerpo">
+        <section class="detalle-texto" aria-labelledby="titulo-descripcion">
+            <h2 id="titulo-descripcion">Sobre el evento</h2>
+            <p th:text="${detalle.descripcion}">Descripción</p>
+            <h2>Requisitos de participación</h2>
+            <p th:text="${detalle.requisitos}">Requisitos</p>
+            <h2>Inscripción</h2>
+            <p th:text="${detalle.inscripcion}">Inscripción</p>
+        </section>
+        <aside class="ficha" aria-labelledby="titulo-ficha">
+            <h2 id="titulo-ficha">Ficha del evento</h2>
+            <dl>
+                <dt>Fecha y hora</dt>
+                <dd th:text="|${#temporals.format(detalle.evento.fecha, 'dd/MM/yyyy')} · ${#temporals.format(detalle.hora, 'HH:mm')} · ${detalle.zonaHoraria}|">Fecha</dd>
+                <dt>Organizador</dt><dd th:text="${detalle.organizador}">Organizador</dd>
+                <dt th:if="${detalle.ubicacion != null}">Ubicación</dt>
+                <dd th:if="${detalle.ubicacion != null}" th:text="${detalle.ubicacion}">Ubicación</dd>
+                <dt th:if="${detalle.enlaceAcceso != null}">Enlace de acceso</dt>
+                <dd th:if="${detalle.enlaceAcceso != null}"><a class="enlace-detalle" th:href="@{/eventos/{id}/canal(id=${detalle.evento.id})}">Abrir canal de referencia</a></dd>
+            </dl>
+        </aside>
+    </div>
+
+    <section class="bloque" aria-labelledby="titulo-galeria">
+        <h2 id="titulo-galeria">Galería</h2>
+        <div class="galeria">
+            <figure><img th:src="@{/img/{imagen}(imagen=${detalle.evento.imagen})}" alt="Ambiente gamer de referencia" width="640" height="360">
+                <figcaption>Fotografía de referencia</figcaption></figure>
+            <figure><img th:src="@{/eventos/{id}/foto(id=${detalle.evento.id})}" alt="Equipamiento gamer de referencia" width="640" height="360">
+                <figcaption>Fotografía de referencia</figcaption></figure>
+            <th:block th:replace="~{participacion :: galeria}"></th:block>
+        </div>
+    </section>
+    <div th:replace="~{participacion :: herramientas}"></div>
+    <div th:replace="~{participacion :: interaccion}"></div>
+</main>
+<footer th:replace="~{componentes :: pie}"></footer>
+</body>
+</html>
